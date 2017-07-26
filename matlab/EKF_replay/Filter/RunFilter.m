@@ -62,6 +62,7 @@ for index = indexStart:indexStop
     output.speed(index) = sqrt(dot(states(5:7),states(5:7)));
     output.gyro_bias(index,:) = states(8:10)';
     output.accel_bias(index,:) = states(11:13)';
+    output.g_load(index) = (sqrt(dot(delVelCorrected,delVelCorrected)) / dt_imu / gravity);
     
     % output covariance data
     for i=1:13
