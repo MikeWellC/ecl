@@ -12,7 +12,7 @@ function [...
 
 innovation = zeros(1,3);
 varInnov = zeros(1,3);
-H = zeros(3,27);
+H = zeros(3,13);
 
 for obsIndex = 1:3
     
@@ -57,7 +57,7 @@ for obsIndex = 1:3
     P = 0.5*(P + transpose(P));
     
     % ensure diagonals are positive
-    for i=1:27
+    for i=1:13
         if P(i,i) < 0
             P(i,i) = 0;
         end

@@ -34,25 +34,25 @@ q1 = states(2);
 q2 = states(3);
 q3 = states(4);
 
-dax_b = states(11);
-day_b = states(12);
-daz_b = states(13);
+dax_b = states(8);
+day_b = states(9);
+daz_b = states(10);
 
-dvx_b = states(14);
-dvy_b = states(15);
-dvz_b = states(16);
+dvx_b = states(11);
+dvy_b = states(12);
+dvz_b = states(13);
 
 vn = states(5);
 ve = states(6);
 vd = states(7);
 
 % Predicted covariance
-F = calcF27(dax,dax_b,day,day_b,daz,daz_b,dt,dvx,dvx_b,dvy,dvy_b,dvz,dvz_b,q0,q1,q2,q3,vd,ve,vn);
-Q = calcQ27(daxVar,dayVar,dazVar,dvxVar,dvyVar,dvzVar,q0,q1,q2,q3);
+F = calcF13(dax,dax_b,day,day_b,daz,daz_b,dvx,dvx_b,dvy,dvy_b,dvz,dvz_b,q0,q1,q2,q3);
+Q = calcQ13(daxVar,dayVar,dazVar,dvxVar,dvyVar,dvzVar,q0,q1,q2,q3);
 P = F*P*transpose(F) + Q;
 
 % Add the general process noise variance
-for i = 1:27
+for i = 1:13
     P(i,i) = P(i,i) + processNoiseVariance(i);
 end
 
@@ -61,7 +61,7 @@ end
 P = 0.5*(P + transpose(P));
 
 % ensure diagonals are positive
-for i=1:27
+for i=1:13
     if P(i,i) < 0
         P(i,i) = 0;
     end
