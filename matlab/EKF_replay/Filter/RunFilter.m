@@ -35,6 +35,8 @@ covariance = InitCovariance(param,dt_imu_avg);
 % array access index variables
 imuIndex = imu_start_index;
 innovIndex = 1;
+lastVelFuseTime = imu_data.time_us(imuIndex)*1e-6;
+lastHighAccelTime = imu_data.time_us(imuIndex)*1e-6 - 2;
 for index = indexStart:indexStop
     
     % read IMU measurements
@@ -76,10 +78,16 @@ for index = indexStart:indexStop
     % fuse in a zero velocity to constrain attitude drift if the g level is
     % below 2
     accel_vec = delVelCorrected / dt_imu;
-    if (dot(accel_vec,accel_vec) < (2*gravity)^2)
-        gate = 5;
-        vel_noise = 10;
-        [states,covariance,velInnov,velInnovVar] = FuseVelocity(states,covariance,[0 0 0],gate,vel_noise);
+    if (dot(accel_vec,accel_vec) > (2*gravity)^2)
+        lastHighAccelTime = local_time;
+    end
+    if ((local_time - lastHighAccelTime) > 1)
+        gate = 3;
+        vel_noise = 5;
+        [states,covariance,velInnov,velInnovVar,innovTestPass] = FuseVelocity(states,covariance,[0 0 0],gate,vel_noise);
+        if (innovTestPass == 1)
+            lastVelFuseTime = local_time;
+        end
 
         % data logging
         output.innovations.vel_time_lapsed(innovIndex) = local_time;
@@ -88,6 +96,14 @@ for index = indexStart:indexStop
         innovIndex = innovIndex+1;
     end
     
+    if (local_time - lastVelFuseTime > 2)
+        quat = AlignTilt([1;0;0;0],accel_vec);
+        states(1:4) = quat;
+        states(5) = 0;
+        states(6) = 0;
+        states(7) = 0;
+        covariance = InitCovariance(param,dt_imu_avg);
+    end
         
 end
 
