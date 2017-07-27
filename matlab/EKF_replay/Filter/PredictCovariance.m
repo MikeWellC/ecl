@@ -10,9 +10,7 @@ function P  = PredictCovariance(deltaAngle, ...
 % This process noise determines the rate of estimation of IMU bias errors
 dAngBiasSigma = dt*dt*param.prediction.dAngBiasPnoise;
 dVelBiasSigma = dt*dt*param.prediction.dVelBiasPnoise;
-magSigmaNED = dt*param.prediction.magPnoiseNED;
-magSigmaXYZ = dt*param.prediction.magPnoiseXYZ;
-processNoiseVariance = [zeros(1,10), dAngBiasSigma*[1 1 1], dVelBiasSigma*[1 1 1], zeros(1,3), magSigmaNED*[1 1 1], magSigmaXYZ*[1 1 1], [0 0]].^2;
+processNoiseVariance = [zeros(1,7), dAngBiasSigma*[1 1 1], dVelBiasSigma*[1 1 1]].^2;
 
 % Specify the noise variance on the IMU delta angles and delta velocities
 daxVar = (dt*param.prediction.angRateNoise)^2;
